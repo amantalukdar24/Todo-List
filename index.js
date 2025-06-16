@@ -1,5 +1,6 @@
 const express=require('express');
 const mongoose=require('mongoose');
+const cors=require('cors');
 const app=express();
 mongoose.connect("mongodb://127.0.0.1:27017/todo")
         .then(()=>{
@@ -18,7 +19,7 @@ const todoSchema=new mongoose.Schema({
 const Todo=mongoose.model('todo',todoSchema);
 
 
-
+app.use(cors());
 app.use(express.urlencoded({extended:false}));
 
 app.get('/',async (req,res)=>{
@@ -66,6 +67,10 @@ app.patch('/updateTodo/:id',async (req,res)=>{
 app.delete("/deleteTodo/:id",async (req,res)=>{
     await Todo.findByIdAndDelete(req.params.id);
     return res.send({delete:" Todo deleted sucessfully"});
+});
+app.get('/api/data',async (req,res)=>{
+    const data=await Todo.find({});
+    return res.json(data);
 })
 app.listen(3000,()=>{
     console.log(`Server is running on the port 3000`);
